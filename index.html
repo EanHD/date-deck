@@ -70,19 +70,16 @@
   .nav-bar {
     background: var(--ios-card);
     border-bottom: 0.5px solid var(--ios-separator);
-    padding: 44px 16px 16px;
+    padding: 8px 16px 12px;
     text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
   
   .nav-title {
-    font-size: 34px;
-    font-weight: 700;
-    letter-spacing: 0.37px;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.35px;
     margin: 0;
     color: var(--ios-label);
   }
@@ -90,12 +87,12 @@
   .nav-subtitle {
     font-size: 13px;
     color: var(--ios-secondary-label);
-    margin: 4px 0 0;
+    margin: 2px 0 0;
     font-weight: 400;
   }
   
   .content {
-    padding: 0 0 100px;
+    padding: 16px 0 80px;
   }
   
   .section {
@@ -250,7 +247,7 @@
     right: 0;
     background: var(--ios-card);
     border-top: 0.5px solid var(--ios-separator);
-    padding: 16px;
+    padding: 12px 16px;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
   }
@@ -258,14 +255,14 @@
   .draw-btn {
     background: var(--ios-blue);
     color: white;
-    font-size: 20px;
-    font-weight: 700;
-    padding: 18px;
-    margin-bottom: 8px;
+    font-size: 17px;
+    font-weight: 600;
+    padding: 14px;
+    margin-bottom: 0;
   }
   
   .filter-input {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
   
   .stats {
@@ -312,6 +309,9 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
     -webkit-tap-highlight-color: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   
   .list-item:last-child {
@@ -320,6 +320,15 @@
   
   .list-item:active {
     background: var(--ios-gray6);
+  }
+  
+  .list-item.selected {
+    background: rgba(0, 122, 255, 0.1);
+  }
+  
+  .list-item-content {
+    flex: 1;
+    min-width: 0;
   }
   
   .list-item-text {
@@ -334,6 +343,51 @@
     font-size: 15px;
     color: var(--ios-secondary-label);
     font-weight: 400;
+  }
+  
+  .list-item-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 12px;
+  }
+  
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  
+  .delete-btn {
+    background: var(--ios-red);
+    color: white;
+  }
+  
+  .delete-btn:active {
+    transform: scale(0.9);
+  }
+  
+  .edit-mode-controls {
+    background: var(--ios-card);
+    border-top: 0.5px solid var(--ios-separator);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .edit-mode-controls .btn {
+    padding: 8px 16px;
+    font-size: 15px;
+    min-height: auto;
   }
   
   .empty-state {
@@ -363,15 +417,15 @@
   /* Safe area handling */
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     .nav-bar {
-      padding-top: max(44px, env(safe-area-inset-top));
+      padding-top: max(8px, calc(8px + env(safe-area-inset-top)));
     }
     
     .draw-section {
-      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      padding-bottom: max(12px, calc(12px + env(safe-area-inset-bottom)));
     }
     
     .content {
-      padding-bottom: max(100px, calc(100px + env(safe-area-inset-bottom)));
+      padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom)));
     }
   }
 </style>
@@ -408,6 +462,16 @@
       <div class="section">
         <div class="section-header">Your Collection</div>
         <div class="stats" id="stats">Add some ideas to get started</div>
+      <div style="text-align: center; margin-bottom: 12px;">
+        <button class="btn btn-secondary" id="editMode" style="display: none; padding: 6px 12px; font-size: 13px;">Edit</button>
+      </div>
+        <div class="edit-mode-controls" id="editControls" style="display: none;">
+          <span id="selectedCount">0 selected</span>
+          <div>
+            <button class="btn btn-secondary" id="cancelEdit">Cancel</button>
+            <button class="btn btn-primary" id="deleteSelected" style="background: var(--ios-red);">Delete</button>
+          </div>
+        </div>
         <div class="list" id="list">
           <div class="empty-state">
             Tap "Examples" above to see sample date ideas, then add your own!
@@ -442,6 +506,14 @@
   const filterEl = el('filter');
   const sampleBtn = el('sample');
   const statsEl = el('stats');
+  const editModeBtn = el('editMode');
+  const editControls = el('editControls');
+  const cancelEditBtn = el('cancelEdit');
+  const deleteSelectedBtn = el('deleteSelected');
+  const selectedCountEl = el('selectedCount');
+  
+  let isEditMode = false;
+  let selectedItems = new Set();
   
   // iOS-style haptic feedback simulation
   function triggerHaptic(element) {
@@ -469,11 +541,33 @@
     const count = items.length;
     if (count === 0) {
       statsEl.textContent = "Add some ideas to get started";
+      editModeBtn.style.display = "none";
     } else if (count === 1) {
       statsEl.textContent = "1 idea in your collection";
+      editModeBtn.style.display = "inline-block";
     } else {
       statsEl.textContent = `${count} ideas in your collection`;
+      editModeBtn.style.display = "inline-block";
     }
+  }
+  
+  function updateEditMode() {
+    if (isEditMode) {
+      editControls.style.display = "flex";
+      editModeBtn.textContent = "Done";
+      updateSelectedCount();
+    } else {
+      editControls.style.display = "none";
+      editModeBtn.textContent = "Edit";
+      selectedItems.clear();
+    }
+  }
+  
+  function updateSelectedCount() {
+    const count = selectedItems.size;
+    selectedCountEl.textContent = count === 0 ? "None selected" : `${count} selected`;
+    deleteSelectedBtn.disabled = count === 0;
+    deleteSelectedBtn.style.opacity = count === 0 ? "0.3" : "1";
   }
   
   function render() {
@@ -490,6 +584,12 @@
     items.forEach((item, i) => {
       const div = document.createElement('div');
       div.className = "list-item";
+      if (selectedItems.has(item.id)) {
+        div.classList.add('selected');
+      }
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = "list-item-content";
       
       const textDiv = document.createElement('div');
       textDiv.className = "list-item-text";
@@ -499,32 +599,76 @@
       tagsDiv.className = "list-item-tags";
       tagsDiv.textContent = item.tags.map(tag => `#${tag}`).join(' ');
       
-      div.appendChild(textDiv);
+      contentDiv.appendChild(textDiv);
       if (item.tags.length > 0) {
-        div.appendChild(tagsDiv);
+        contentDiv.appendChild(tagsDiv);
       }
       
-      // Add native iOS touch behavior
+      div.appendChild(contentDiv);
+      
+      if (isEditMode) {
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = "list-item-actions";
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = "action-btn delete-btn";
+        deleteBtn.innerHTML = "×";
+        deleteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteItem(item.id);
+        });
+        
+        actionsDiv.appendChild(deleteBtn);
+        div.appendChild(actionsDiv);
+      }
+      
+      // Touch behavior for iOS
       div.addEventListener('touchstart', () => {
-        div.style.backgroundColor = 'var(--ios-gray6)';
+        if (!isEditMode) {
+          div.style.backgroundColor = 'var(--ios-gray6)';
+        }
       });
       
       div.addEventListener('touchend', () => {
-        setTimeout(() => {
-          div.style.backgroundColor = '';
-        }, 150);
+        if (!isEditMode) {
+          setTimeout(() => {
+            div.style.backgroundColor = '';
+          }, 150);
+        }
       });
       
       div.addEventListener('click', () => {
-        triggerHaptic(div);
-        if (item.tags.length > 0) {
-          filterEl.value = item.tags[0];
-          filterEl.focus();
+        if (isEditMode) {
+          toggleSelection(item.id);
+          div.classList.toggle('selected');
+          updateSelectedCount();
+        } else {
+          triggerHaptic(div);
+          if (item.tags.length > 0) {
+            filterEl.value = item.tags[0];
+            filterEl.focus();
+          }
         }
       });
       
       listEl.appendChild(div);
     });
+  }
+  
+  function deleteItem(itemId) {
+    items = items.filter(item => item.id !== itemId);
+    selectedItems.delete(itemId);
+    save();
+    render();
+    updateSelectedCount();
+  }
+  
+  function toggleSelection(itemId) {
+    if (selectedItems.has(itemId)) {
+      selectedItems.delete(itemId);
+    } else {
+      selectedItems.add(itemId);
+    }
   }
   
   function showResult(item) {
@@ -662,6 +806,31 @@
   bulk.addEventListener('input', () => {
     bulk.style.height = 'auto';
     bulk.style.height = Math.max(100, bulk.scrollHeight) + 'px';
+  });
+  
+  // Edit mode controls
+  editModeBtn.addEventListener('click', () => {
+    isEditMode = !isEditMode;
+    updateEditMode();
+    render();
+  });
+  
+  cancelEditBtn.addEventListener('click', () => {
+    isEditMode = false;
+    updateEditMode();
+    render();
+  });
+  
+  deleteSelectedBtn.addEventListener('click', () => {
+    if (selectedItems.size === 0) return;
+    
+    if (confirm(`Delete ${selectedItems.size} selected idea${selectedItems.size > 1 ? 's' : ''}?`)) {
+      items = items.filter(item => !selectedItems.has(item.id));
+      selectedItems.clear();
+      save();
+      render();
+      updateSelectedCount();
+    }
   });
   
   // Keyboard shortcuts
