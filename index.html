@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#111111">
+<title>Date Deck</title>
+<style>
+  :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  body { margin: 24px; max-width: 880px; }
+  h1 { margin: 0 0 12px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  textarea { width: 100%; min-height: 120px; padding: 10px; }
+  input[type="text"] { padding: 8px; width: 100%; }
+  button { padding: 10px 14px; border: 1px solid #ccc; border-radius: 8px; background: #fafafa; cursor: pointer; }
+  button.primary { background: #111; color: #fff; border-color: #111; }
+  button.warn { background: #fff4f4; border-color: #f3b1b1; }
+  .card { border: 1px solid #e6e6e6; border-radius: 12px; padding: 14px; background: #fff; }
+  .pill { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; margin-right:6px; margin-top:6px;}
+  .muted { color:#666; }
+  .grid { display:grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; }
+  .list { display:grid; gap:10px; }
+  .item { display:grid; grid-template-columns: 1fr auto; gap: 8px; border:1px dashed #eaeaea; padding:8px 10px; border-radius:8px; }
+  .item small { color:#777; }
+  .result { font-size: 20px; padding: 16px; border-radius:12px; background:#f7f7ff; border:1px solid #ddd; }
+  .spacer{height:10px}
+</style>
+</head>
+<body>
+  <h1>💘 Date Deck</h1>
+  <p class="muted">Paste or upload lines like: <code>Sunset picnic | classic, outdoors | 2</code></p>
+  <div class="card">
+    <h3>➕ Add ideas</h3>
+    <textarea id="bulk"></textarea>
+    <div class="row">
+      <input type="file" id="file" accept=".txt,.csv,.md,.list" />
+      <button id="parse" class="primary">Add to Deck</button>
+      <button id="sample">Load Sample Romantic Deck</button>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <div class="grid">
+    <div class="card">
+      <h3>🎲 Randomizer</h3>
+      <div class="row">
+        <input type="text" id="filter" placeholder="Filter by tag (optional)" />
+      </div>
+      <div class="row">
+        <button id="draw" class="primary">Draw</button>
+      </div>
+      <div id="result" class="result" style="display:none"></div>
+    </div>
+    <div class="card">
+      <h3>🗂️ Deck (<span id="count">0</span>)</h3>
+      <div class="list" id="list"></div>
+    </div>
+  </div>
+<script>
+(function(){
+  const LS_KEY = "datedeck_items_v1";
+  let items = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+  const el=(id)=>document.getElementById(id);
+  const bulk=el('bulk'), file=el('file');
+  const parseBtn=el('parse'), listEl=el('list'), countEl=el('count');
+  const drawBtn=el('draw'), resultEl=el('result'), filterEl=el('filter');
+  function save(){ localStorage.setItem(LS_KEY, JSON.stringify(items)); }
+  function parseLine(line){
+    line=line.trim(); if(!line) return null;
+    const parts=line.split("|").map(s=>s.trim());
+    return {text:parts[0], tags:(parts[1]||"").split(",").map(s=>s.trim()).filter(Boolean)};
+  }
+  function render(){
+    listEl.innerHTML=""; countEl.textContent=items.length;
+    items.forEach((it,i)=>{
+      const div=document.createElement('div');
+      div.className="item";
+      div.innerHTML=`${it.text}<br><small>${it.tags.join(", ")}</small>`;
+      listEl.appendChild(div);
+    });
+  }
+  parseBtn.onclick=()=>{
+    const lines=bulk.value.split(/\n/).map(parseLine).filter(Boolean);
+    items=items.concat(lines); save(); render(); bulk.value="";
+  };
+  file.onchange=async e=>{const f=e.target.files[0];if(!f)return;bulk.value=await f.text();};
+  drawBtn.onclick=()=>{
+    const f=filterEl.value.trim().toLowerCase();
+    let pool=items; if(f) pool=items.filter(x=>x.tags.map(t=>t.toLowerCase()).includes(f));
+    if(!pool.length){resultEl.style.display="block"; resultEl.innerText="No match.";return;}
+    const pick=pool[Math.floor(Math.random()*pool.length)];
+    resultEl.style.display="block"; resultEl.innerHTML=`<b>${pick.text}</b><br><small>${pick.tags.join(", ")}</small>`;
+  };
+  el('sample').onclick=()=>{
+    bulk.value="Write each other love letters | cozy, intimate\nBlanket fort movie night | cozy, home";
+  };
+  render();
+})();
+</script>
+</body>
+</html>
