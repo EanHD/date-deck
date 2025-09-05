@@ -65,6 +65,23 @@
     margin: 0 auto; 
     padding: 0;
     min-height: 100vh;
+    background: var(--ios-bg);
+    position: relative;
+  }
+  
+  /* Force mobile appearance on all devices */
+  @media (min-width: 429px) {
+    body {
+      background: #f0f0f0;
+      padding: 20px;
+    }
+    
+    .container {
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--ios-separator);
+    }
   }
   
   .nav-bar {
@@ -74,6 +91,9 @@
     text-align: center;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
   
   .nav-title {
@@ -240,16 +260,28 @@
     gap: 12px;
   }
   
+  /* Force consistent mobile-first display */
   .draw-section {
     position: fixed;
     bottom: 0;
-    left: 0;
-    right: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 428px;
     background: var(--ios-card);
     border-top: 0.5px solid var(--ios-separator);
     padding: 12px 16px;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    z-index: 100;
+  }
+  
+  @media (min-width: 429px) {
+    .draw-section {
+      border-left: 0.5px solid var(--ios-separator);
+      border-right: 0.5px solid var(--ios-separator);
+      border-radius: 0 0 12px 12px;
+    }
   }
   
   .draw-btn {
@@ -414,7 +446,7 @@
     animation: haptic 0.1s ease;
   }
   
-  /* Safe area handling */
+  /* Safe area handling and desktop adjustments */
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     .nav-bar {
       padding-top: max(8px, calc(8px + env(safe-area-inset-top)));
@@ -426,6 +458,27 @@
     
     .content {
       padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom)));
+    }
+  }
+  
+  /* Desktop centering adjustments */
+  @media (min-width: 429px) {
+    body {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .draw-section {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      transform: none;
+      width: auto;
+      max-width: none;
     }
   }
 </style>
