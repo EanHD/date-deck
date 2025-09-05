@@ -2,100 +2,517 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#111111">
+<meta name="theme-color" content="#ff6b6b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Date Deck">
 <title>Date Deck</title>
 <style>
-  :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-  body { margin: 24px; max-width: 880px; }
-  h1 { margin: 0 0 12px; }
+  :root { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --primary: #ff6b6b;
+    --primary-dark: #e55353;
+    --secondary: #4ecdc4;
+    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    --border-radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  body { 
+    margin: 0; 
+    padding: 20px; 
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    color: #333;
+    line-height: 1.6;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  h1 { 
+    margin: 0 0 8px; 
+    font-size: 2.5rem; 
+    font-weight: 700; 
+    text-align: center;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .subtitle { 
+    text-align: center; 
+    color: rgba(255,255,255,0.9); 
+    margin-bottom: 30px; 
+    font-size: 1.1rem;
+  }
   .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-  textarea { width: 100%; min-height: 120px; padding: 10px; }
-  input[type="text"] { padding: 8px; width: 100%; }
-  button { padding: 10px 14px; border: 1px solid #ccc; border-radius: 8px; background: #fafafa; cursor: pointer; }
-  button.primary { background: #111; color: #fff; border-color: #111; }
-  button.warn { background: #fff4f4; border-color: #f3b1b1; }
-  .card { border: 1px solid #e6e6e6; border-radius: 12px; padding: 14px; background: #fff; }
-  .pill { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; margin-right:6px; margin-top:6px;}
-  .muted { color:#666; }
-  .grid { display:grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; }
-  .list { display:grid; gap:10px; }
-  .item { display:grid; grid-template-columns: 1fr auto; gap: 8px; border:1px dashed #eaeaea; padding:8px 10px; border-radius:8px; }
-  .item small { color:#777; }
-  .result { font-size: 20px; padding: 16px; border-radius:12px; background:#f7f7ff; border:1px solid #ddd; }
-  .spacer{height:10px}
+  .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 768px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+  textarea { 
+    width: 100%; 
+    min-height: 120px; 
+    padding: 16px; 
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    font-family: inherit;
+    resize: vertical;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+  }
+  textarea:focus { 
+    outline: none; 
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  }
+  input[type="text"] { 
+    padding: 16px; 
+    width: 100%; 
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    font-family: inherit;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+  }
+  input[type="text"]:focus {
+    outline: none;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  }
+  input[type="file"] {
+    padding: 12px;
+    border: 2px dashed #ddd;
+    border-radius: var(--border-radius);
+    background: white;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  input[type="file"]:hover {
+    border-color: var(--primary);
+    background: #fff5f5;
+  }
+  button { 
+    padding: 16px 24px; 
+    border: none;
+    border-radius: var(--border-radius);
+    background: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    box-shadow: var(--card-shadow);
+    color: #333;
+    min-height: 54px;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  button:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  }
+  button:active {
+    transform: translateY(0);
+  }
+  button.primary { 
+    background: var(--primary);
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  button.primary:hover {
+    background: var(--primary-dark);
+  }
+  button.secondary {
+    background: var(--secondary);
+    color: white;
+  }
+  .card { 
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 24px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+  }
+  .card h3 {
+    margin: 0 0 20px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #333;
+  }
+  .list { display: grid; gap: 12px; max-height: 400px; overflow-y: auto; }
+  .item { 
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  .item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  }
+  .item-text {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  .item-tags {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  .result { 
+    font-size: 24px; 
+    padding: 32px;
+    border-radius: var(--border-radius);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    margin-top: 20px;
+    animation: slideIn 0.5s ease;
+  }
+  .result-text {
+    font-weight: 700;
+    margin-bottom: 12px;
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+  .result-tags {
+    font-size: 1rem;
+    opacity: 0.9;
+    font-weight: 400;
+  }
+  .stats {
+    text-align: center;
+    background: rgba(255,255,255,0.2);
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    color: white;
+    font-weight: 600;
+  }
+  .btn-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  @media (max-width: 768px) {
+    .btn-row {
+      grid-template-columns: 1fr;
+    }
+    h1 { font-size: 2rem; }
+    .result { font-size: 20px; padding: 24px; }
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+  .empty-state {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 40px 20px;
+  }
 </style>
 </head>
 <body>
-  <h1>💘 Date Deck</h1>
-  <p class="muted">Paste or upload lines like: <code>Sunset picnic | classic, outdoors | 2</code></p>
-  <p class="muted" style="font-size: 12px;">v1.1 - Updated sample ideas!</p>
-  <div class="card">
-    <h3>➕ Add ideas</h3>
-    <textarea id="bulk"></textarea>
-    <div class="row">
-      <input type="file" id="file" accept=".txt,.csv,.md,.list" />
-      <button id="parse" class="primary">Add to Deck</button>
-      <button id="sample">Load Sample Romantic Deck</button>
-    </div>
-  </div>
-  <div class="spacer"></div>
-  <div class="grid">
+  <div class="container">
+    <h1>💘 Date Deck</h1>
+    <p class="subtitle">Your personal collection of amazing date ideas</p>
+    
     <div class="card">
-      <h3>🎲 Randomizer</h3>
-      <div class="row">
-        <input type="text" id="filter" placeholder="Filter by tag (optional)" />
+      <h3>✨ Add New Ideas</h3>
+      <p style="margin-top: 0; color: #666; font-size: 0.95rem;">
+        Add ideas in this format: <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 4px;">Sunset picnic | romantic, outdoors</code>
+      </p>
+      <textarea id="bulk" placeholder="Candlelit dinner at home | romantic, cozy&#10;Mini golf adventure | fun, active&#10;Cooking class together | learning, food"></textarea>
+      <div class="row" style="margin-top: 16px;">
+        <input type="file" id="file" accept=".txt,.csv,.md,.list" />
       </div>
-      <div class="row">
-        <button id="draw" class="primary">Draw</button>
+      <div class="btn-row">
+        <button id="parse" class="primary">✨ Add to Deck</button>
+        <button id="sample" class="secondary">📝 Load Examples</button>
       </div>
-      <div id="result" class="result" style="display:none"></div>
     </div>
-    <div class="card">
-      <h3>🗂️ Deck (<span id="count">0</span>)</h3>
-      <div class="list" id="list"></div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>🎲 Draw Your Next Date</h3>
+        <div class="stats" id="stats">Ready to discover something amazing!</div>
+        <input type="text" id="filter" placeholder="🏷️ Filter by tag (optional)" />
+        <button id="draw" class="primary" style="width: 100%; margin-top: 16px; font-size: 20px;">
+          🎯 Draw Random Date
+        </button>
+        <div id="result" style="display:none"></div>
+      </div>
+      
+      <div class="card">
+        <h3>🗂️ Your Date Collection</h3>
+        <div class="stats">
+          <span id="count">0</span> amazing ideas ready
+        </div>
+        <div class="list" id="list">
+          <div class="empty-state">
+            Add some date ideas to get started! 💡
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 <script>
 (function(){
-  const LS_KEY = "datedeck_items_v1";
+  'use strict';
+  
+  const LS_KEY = "datedeck_items_v2";
   let items = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
-  const el=(id)=>document.getElementById(id);
-  const bulk=el('bulk'), file=el('file');
-  const parseBtn=el('parse'), listEl=el('list'), countEl=el('count');
-  const drawBtn=el('draw'), resultEl=el('result'), filterEl=el('filter');
-  function save(){ localStorage.setItem(LS_KEY, JSON.stringify(items)); }
-  function parseLine(line){
-    line=line.trim(); if(!line) return null;
-    const parts=line.split("|").map(s=>s.trim());
-    return {text:parts[0], tags:(parts[1]||"").split(",").map(s=>s.trim()).filter(Boolean)};
+  
+  // Cache DOM elements
+  const el = (id) => document.getElementById(id);
+  const bulk = el('bulk');
+  const file = el('file');
+  const parseBtn = el('parse');
+  const listEl = el('list');
+  const countEl = el('count');
+  const drawBtn = el('draw');
+  const resultEl = el('result');
+  const filterEl = el('filter');
+  const sampleBtn = el('sample');
+  const statsEl = el('stats');
+  
+  // Utility functions
+  function save() { 
+    localStorage.setItem(LS_KEY, JSON.stringify(items)); 
   }
-  function render(){
-    listEl.innerHTML=""; countEl.textContent=items.length;
-    items.forEach((it,i)=>{
-      const div=document.createElement('div');
-      div.className="item";
-      div.innerHTML=`${it.text}<br><small>${it.tags.join(", ")}</small>`;
+  
+  function parseLine(line) {
+    line = line.trim();
+    if (!line) return null;
+    const parts = line.split("|").map(s => s.trim());
+    return {
+      id: Date.now() + Math.random(),
+      text: parts[0],
+      tags: (parts[1] || "").split(",").map(s => s.trim()).filter(Boolean)
+    };
+  }
+  
+  function updateStats() {
+    const count = items.length;
+    countEl.textContent = count;
+    if (count === 0) {
+      statsEl.textContent = "Add some ideas to get started! 💡";
+    } else if (count === 1) {
+      statsEl.textContent = "1 amazing idea ready to go! 🎯";
+    } else {
+      statsEl.textContent = `${count} amazing ideas ready! 🎲`;
+    }
+  }
+  
+  function render() {
+    updateStats();
+    
+    if (items.length === 0) {
+      listEl.innerHTML = '<div class="empty-state">Add some date ideas to get started! 💡</div>';
+      return;
+    }
+    
+    listEl.innerHTML = "";
+    items.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.className = "item";
+      div.innerHTML = `
+        <div class="item-text">${escapeHtml(item.text)}</div>
+        <div class="item-tags">${item.tags.map(tag => `#${escapeHtml(tag)}`).join(' ')}</div>
+      `;
+      
+      // Add click to use as filter
+      div.addEventListener('click', () => {
+        if (item.tags.length > 0) {
+          filterEl.value = item.tags[0];
+          filterEl.focus();
+        }
+      });
+      
       listEl.appendChild(div);
     });
   }
-  parseBtn.onclick=()=>{
-    const lines=bulk.value.split(/\n/).map(parseLine).filter(Boolean);
-    items=items.concat(lines); save(); render(); bulk.value="";
-  };
-  file.onchange=async e=>{const f=e.target.files[0];if(!f)return;bulk.value=await f.text();};
-  drawBtn.onclick=()=>{
-    const f=filterEl.value.trim().toLowerCase();
-    let pool=items; if(f) pool=items.filter(x=>x.tags.map(t=>t.toLowerCase()).includes(f));
-    if(!pool.length){resultEl.style.display="block"; resultEl.innerText="No match.";return;}
-    const pick=pool[Math.floor(Math.random()*pool.length)];
-    resultEl.style.display="block"; resultEl.innerHTML=`<b>${pick.text}</b><br><small>${pick.tags.join(", ")}</small>`;
-  };
-  el('sample').onclick=()=>{
-    bulk.value="Write each other love letters | cozy, intimate\nBlanket fort movie night | cozy, home\nStargazing in the backyard | romantic, outdoors\nCook dinner together | home, food\nVisit a local museum | cultural, indoors\nBike ride in the park | active, outdoors\nGame night with board games | fun, home\nPicnic at the beach | classic, outdoors\nAttend a live music concert | entertainment, social\nTake a dance class | active, learning";
-  };
+  
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
+  function showResult(item) {
+    resultEl.style.display = "block";
+    resultEl.className = "result";
+    resultEl.innerHTML = `
+      <div class="result-text">${escapeHtml(item.text)}</div>
+      <div class="result-tags">${item.tags.map(tag => `#${escapeHtml(tag)}`).join(' ')}</div>
+    `;
+    
+    // Scroll to result on mobile
+    setTimeout(() => {
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  }
+  
+  function addLoadingState(element) {
+    element.classList.add('loading');
+    element.disabled = true;
+  }
+  
+  function removeLoadingState(element) {
+    element.classList.remove('loading');
+    element.disabled = false;
+  }
+  
+  // Event handlers
+  parseBtn.addEventListener('click', () => {
+    const text = bulk.value.trim();
+    if (!text) return;
+    
+    addLoadingState(parseBtn);
+    
+    setTimeout(() => {
+      const lines = text.split(/\n/).map(parseLine).filter(Boolean);
+      if (lines.length > 0) {
+        items = items.concat(lines);
+        save();
+        render();
+        bulk.value = "";
+        
+        // Show success feedback
+        parseBtn.textContent = `✅ Added ${lines.length} idea${lines.length > 1 ? 's' : ''}!`;
+        setTimeout(() => {
+          parseBtn.textContent = "✨ Add to Deck";
+        }, 2000);
+      }
+      removeLoadingState(parseBtn);
+    }, 300);
+  });
+  
+  file.addEventListener('change', async (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    
+    try {
+      const text = await f.text();
+      bulk.value = text;
+      bulk.focus();
+    } catch (error) {
+      alert('Error reading file. Please try again.');
+    }
+  });
+  
+  drawBtn.addEventListener('click', () => {
+    if (items.length === 0) {
+      resultEl.style.display = "block";
+      resultEl.innerHTML = '<div class="result-text">Add some date ideas first! 💡</div>';
+      return;
+    }
+    
+    addLoadingState(drawBtn);
+    
+    setTimeout(() => {
+      const filterText = filterEl.value.trim().toLowerCase();
+      let pool = items;
+      
+      if (filterText) {
+        pool = items.filter(item => 
+          item.tags.some(tag => tag.toLowerCase().includes(filterText)) ||
+          item.text.toLowerCase().includes(filterText)
+        );
+      }
+      
+      if (pool.length === 0) {
+        resultEl.style.display = "block";
+        resultEl.innerHTML = '<div class="result-text">No matches found! 🤔</div><div class="result-tags">Try a different filter or add more ideas</div>';
+      } else {
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        showResult(pick);
+      }
+      
+      removeLoadingState(drawBtn);
+    }, 500);
+  });
+  
+  sampleBtn.addEventListener('click', () => {
+    const sampleIdeas = [
+      "Candlelit dinner at home | romantic, cozy, food",
+      "Stargazing in the park | romantic, outdoors, peaceful",
+      "Cooking class together | learning, food, interactive",
+      "Mini golf adventure | fun, active, playful", 
+      "Picnic at sunset | classic, outdoors, romantic",
+      "Board game marathon | cozy, home, competitive",
+      "Visit local art gallery | cultural, indoors, inspiring",
+      "Beach volleyball | active, outdoors, summer",
+      "Wine tasting evening | sophisticated, relaxing, social",
+      "Hiking trail adventure | active, outdoors, nature",
+      "Movie night with homemade popcorn | cozy, home, classic",
+      "Farmers market stroll | casual, outdoors, local",
+      "Dance lesson for beginners | active, learning, romantic",
+      "Bookstore browsing date | intellectual, indoor, quiet",
+      "Karaoke night | fun, social, entertaining"
+    ];
+    
+    bulk.value = sampleIdeas.join('\n');
+    bulk.focus();
+    
+    // Auto-scroll to textarea on mobile
+    setTimeout(() => {
+      bulk.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  });
+  
+  // Auto-resize textarea
+  bulk.addEventListener('input', () => {
+    bulk.style.height = 'auto';
+    bulk.style.height = Math.max(120, bulk.scrollHeight) + 'px';
+  });
+  
+  // Enter key to add ideas
+  bulk.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      parseBtn.click();
+    }
+  });
+  
+  // Enter key to draw
+  filterEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      drawBtn.click();
+    }
+  });
+  
+  // Initialize
   render();
+  
+  // Service worker registration for PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .catch(err => console.log('SW registration failed'));
+    });
+  }
 })();
 </script>
 </body>
