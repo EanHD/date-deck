@@ -11,276 +11,424 @@
 <title>Date Deck</title>
 <style>
   :root { 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    --primary: #ff6b6b;
-    --primary-dark: #e55353;
-    --secondary: #4ecdc4;
-    --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --card-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    --border-radius: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+    --ios-blue: #007AFF;
+    --ios-blue-dark: #0051D0;
+    --ios-red: #FF3B30;
+    --ios-green: #34C759;
+    --ios-orange: #FF9500;
+    --ios-purple: #AF52DE;
+    --ios-gray: #8E8E93;
+    --ios-gray2: #AEAEB2;
+    --ios-gray3: #C7C7CC;
+    --ios-gray4: #D1D1D6;
+    --ios-gray5: #E5E5EA;
+    --ios-gray6: #F2F2F7;
+    --ios-bg: #F2F2F7;
+    --ios-card: #FFFFFF;
+    --ios-separator: rgba(60, 60, 67, 0.29);
+    --ios-label: #000000;
+    --ios-secondary-label: rgba(60, 60, 67, 0.6);
+    --ios-tertiary-label: rgba(60, 60, 67, 0.3);
   }
-  * { box-sizing: border-box; }
+  
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ios-bg: #000000;
+      --ios-card: #1C1C1E;
+      --ios-separator: rgba(84, 84, 88, 0.65);
+      --ios-label: #FFFFFF;
+      --ios-secondary-label: rgba(235, 235, 245, 0.6);
+      --ios-tertiary-label: rgba(235, 235, 245, 0.3);
+      --ios-gray6: #1C1C1E;
+    }
+  }
+  
+  * { 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent;
+  }
+  
   body { 
     margin: 0; 
-    padding: 20px; 
-    background: var(--bg-gradient);
+    padding: 0;
+    background: var(--ios-bg);
+    color: var(--ios-label);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .container { 
+    max-width: 428px; 
+    margin: 0 auto; 
+    padding: 0;
     min-height: 100vh;
-    color: #333;
-    line-height: 1.6;
   }
-  .container { max-width: 900px; margin: 0 auto; }
-  h1 { 
-    margin: 0 0 8px; 
-    font-size: 2.5rem; 
-    font-weight: 700; 
+  
+  .nav-bar {
+    background: var(--ios-card);
+    border-bottom: 0.5px solid var(--ios-separator);
+    padding: 44px 16px 16px;
     text-align: center;
-    color: white;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
-  .subtitle { 
-    text-align: center; 
-    color: rgba(255,255,255,0.9); 
-    margin-bottom: 30px; 
-    font-size: 1.1rem;
-  }
-  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-  .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-  @media (min-width: 768px) {
-    .grid { grid-template-columns: 1fr 1fr; }
-  }
-  textarea { 
-    width: 100%; 
-    min-height: 120px; 
-    padding: 16px; 
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    font-family: inherit;
-    resize: vertical;
-    box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
-  }
-  textarea:focus { 
-    outline: none; 
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-  }
-  input[type="text"] { 
-    padding: 16px; 
-    width: 100%; 
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    font-family: inherit;
-    box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
-  }
-  input[type="text"]:focus {
-    outline: none;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-  }
-  input[type="file"] {
-    padding: 12px;
-    border: 2px dashed #ddd;
-    border-radius: var(--border-radius);
-    background: white;
-    width: 100%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  input[type="file"]:hover {
-    border-color: var(--primary);
-    background: #fff5f5;
-  }
-  button { 
-    padding: 16px 24px; 
-    border: none;
-    border-radius: var(--border-radius);
-    background: white;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    font-family: inherit;
-    transition: all 0.3s ease;
-    box-shadow: var(--card-shadow);
-    color: #333;
-    min-height: 54px;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  button:hover { 
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-  }
-  button:active {
-    transform: translateY(0);
-  }
-  button.primary { 
-    background: var(--primary);
-    color: white;
-    font-size: 18px;
+  
+  .nav-title {
+    font-size: 34px;
     font-weight: 700;
+    letter-spacing: 0.37px;
+    margin: 0;
+    color: var(--ios-label);
   }
-  button.primary:hover {
-    background: var(--primary-dark);
-  }
-  button.secondary {
-    background: var(--secondary);
-    color: white;
-  }
-  .card { 
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 24px;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
-  }
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 48px rgba(0,0,0,0.15);
-  }
-  .card h3 {
-    margin: 0 0 20px;
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #333;
-  }
-  .list { display: grid; gap: 12px; max-height: 400px; overflow-y: auto; }
-  .item { 
-    padding: 16px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
-    cursor: pointer;
-  }
-  .item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-  }
-  .item-text {
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #333;
-  }
-  .item-tags {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  .result { 
-    font-size: 24px; 
-    padding: 32px;
-    border-radius: var(--border-radius);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    text-align: center;
-    box-shadow: var(--card-shadow);
-    margin-top: 20px;
-    animation: slideIn 0.5s ease;
-  }
-  .result-text {
-    font-weight: 700;
-    margin-bottom: 12px;
-    font-size: 1.5rem;
-    line-height: 1.3;
-  }
-  .result-tags {
-    font-size: 1rem;
-    opacity: 0.9;
+  
+  .nav-subtitle {
+    font-size: 13px;
+    color: var(--ios-secondary-label);
+    margin: 4px 0 0;
     font-weight: 400;
   }
+  
+  .content {
+    padding: 0 0 100px;
+  }
+  
+  .section {
+    margin-bottom: 35px;
+  }
+  
+  .section-header {
+    padding: 0 16px 8px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ios-secondary-label);
+    text-transform: uppercase;
+    letter-spacing: -0.08px;
+  }
+  
+  .card {
+    background: var(--ios-card);
+    margin: 0 16px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 0.5px solid var(--ios-separator);
+  }
+  
+  .card-section {
+    padding: 16px;
+    border-bottom: 0.5px solid var(--ios-separator);
+  }
+  
+  .card-section:last-child {
+    border-bottom: none;
+  }
+  
+  .form-row {
+    margin-bottom: 16px;
+  }
+  
+  .form-row:last-child {
+    margin-bottom: 0;
+  }
+  
+  textarea, input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    background: var(--ios-gray6);
+    color: var(--ios-label);
+    font-family: inherit;
+    font-size: 17px;
+    line-height: 1.29;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    resize: none;
+  }
+  
+  textarea {
+    min-height: 100px;
+    font-size: 16px;
+  }
+  
+  textarea::placeholder, input::placeholder {
+    color: var(--ios-tertiary-label);
+  }
+  
+  .file-input {
+    position: relative;
+    display: block;
+    width: 100%;
+  }
+  
+  .file-input input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+  
+  .file-input-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    background: var(--ios-gray6);
+    border-radius: 10px;
+    color: var(--ios-blue);
+    font-size: 17px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .file-input-label:active {
+    background: var(--ios-gray5);
+  }
+  
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  
+  .btn-primary {
+    background: var(--ios-blue);
+    color: white;
+  }
+  
+  .btn-primary:active {
+    background: var(--ios-blue-dark);
+    transform: scale(0.98);
+  }
+  
+  .btn-secondary {
+    background: var(--ios-gray6);
+    color: var(--ios-blue);
+  }
+  
+  .btn-secondary:active {
+    background: var(--ios-gray5);
+    transform: scale(0.98);
+  }
+  
+  .btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  
+  .btn-row {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .draw-section {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--ios-card);
+    border-top: 0.5px solid var(--ios-separator);
+    padding: 16px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  
+  .draw-btn {
+    background: var(--ios-blue);
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 18px;
+    margin-bottom: 8px;
+  }
+  
+  .filter-input {
+    margin-bottom: 12px;
+  }
+  
   .stats {
     text-align: center;
-    background: rgba(255,255,255,0.2);
-    padding: 12px;
-    border-radius: 12px;
-    margin-bottom: 20px;
+    color: var(--ios-secondary-label);
+    font-size: 15px;
+    font-weight: 400;
+    margin-bottom: 12px;
+  }
+  
+  .result {
+    background: var(--ios-blue);
     color: white;
-    font-weight: 600;
+    padding: 24px;
+    border-radius: 16px;
+    margin: 16px;
+    text-align: center;
   }
-  .btn-row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 12px;
-    margin-top: 20px;
+  
+  .result-text {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.27;
+    margin-bottom: 8px;
   }
-  @media (max-width: 768px) {
-    .btn-row {
-      grid-template-columns: 1fr;
-    }
-    h1 { font-size: 2rem; }
-    .result { font-size: 20px; padding: 24px; }
+  
+  .result-tags {
+    font-size: 15px;
+    font-weight: 400;
+    opacity: 0.8;
   }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+  
+  .list {
+    background: var(--ios-card);
+    margin: 0 16px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 0.5px solid var(--ios-separator);
   }
-  .loading {
-    opacity: 0.7;
-    pointer-events: none;
+  
+  .list-item {
+    padding: 16px;
+    border-bottom: 0.5px solid var(--ios-separator);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
   }
+  
+  .list-item:last-child {
+    border-bottom: none;
+  }
+  
+  .list-item:active {
+    background: var(--ios-gray6);
+  }
+  
+  .list-item-text {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--ios-label);
+    margin-bottom: 4px;
+    line-height: 1.29;
+  }
+  
+  .list-item-tags {
+    font-size: 15px;
+    color: var(--ios-secondary-label);
+    font-weight: 400;
+  }
+  
   .empty-state {
     text-align: center;
-    color: #666;
-    font-style: italic;
-    padding: 40px 20px;
+    padding: 60px 40px;
+    color: var(--ios-secondary-label);
+    font-size: 17px;
+    line-height: 1.29;
+  }
+  
+  .loading {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  
+  /* iOS-style haptic feedback simulation */
+  @keyframes haptic {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.97); }
+    100% { transform: scale(1); }
+  }
+  
+  .haptic {
+    animation: haptic 0.1s ease;
+  }
+  
+  /* Safe area handling */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .nav-bar {
+      padding-top: max(44px, env(safe-area-inset-top));
+    }
+    
+    .draw-section {
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+    }
+    
+    .content {
+      padding-bottom: max(100px, calc(100px + env(safe-area-inset-bottom)));
+    }
   }
 </style>
 </head>
 <body>
   <div class="container">
-    <h1>💘 Date Deck</h1>
-    <p class="subtitle">Your personal collection of amazing date ideas</p>
-    
-    <div class="card">
-      <h3>✨ Add New Ideas</h3>
-      <p style="margin-top: 0; color: #666; font-size: 0.95rem;">
-        Add ideas in this format: <code style="background: #f5f5f5; padding: 2px 6px; border-radius: 4px;">Sunset picnic | romantic, outdoors</code>
-      </p>
-      <textarea id="bulk" placeholder="Candlelit dinner at home | romantic, cozy&#10;Mini golf adventure | fun, active&#10;Cooking class together | learning, food"></textarea>
-      <div class="row" style="margin-top: 16px;">
-        <input type="file" id="file" accept=".txt,.csv,.md,.list" />
-      </div>
-      <div class="btn-row">
-        <button id="parse" class="primary">✨ Add to Deck</button>
-        <button id="sample" class="secondary">📝 Load Examples</button>
-      </div>
+    <div class="nav-bar">
+      <h1 class="nav-title">Date Ideas</h1>
+      <p class="nav-subtitle">Your personal collection</p>
     </div>
 
-    <div class="grid">
-      <div class="card">
-        <h3>🎲 Draw Your Next Date</h3>
-        <div class="stats" id="stats">Ready to discover something amazing!</div>
-        <input type="text" id="filter" placeholder="🏷️ Filter by tag (optional)" />
-        <button id="draw" class="primary" style="width: 100%; margin-top: 16px; font-size: 20px;">
-          🎯 Draw Random Date
-        </button>
-        <div id="result" style="display:none"></div>
-      </div>
-      
-      <div class="card">
-        <h3>🗂️ Your Date Collection</h3>
-        <div class="stats">
-          <span id="count">0</span> amazing ideas ready
-        </div>
-        <div class="list" id="list">
-          <div class="empty-state">
-            Add some date ideas to get started! 💡
+    <div class="content">
+      <div class="section">
+        <div class="section-header">Add New Ideas</div>
+        <div class="card">
+          <div class="card-section">
+            <div class="form-row">
+              <textarea id="bulk" placeholder="Sunset picnic | romantic, outdoors&#10;Mini golf | fun, active&#10;Cooking class | learning, food"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="file-input">
+                <input type="file" id="file" accept=".txt,.csv,.md,.list" />
+                <label for="file" class="file-input-label">Choose File</label>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button id="parse" class="btn btn-primary">Add to Collection</button>
+              <button id="sample" class="btn btn-secondary">Examples</button>
+            </div>
           </div>
         </div>
       </div>
+
+      <div class="section">
+        <div class="section-header">Your Collection</div>
+        <div class="stats" id="stats">Add some ideas to get started</div>
+        <div class="list" id="list">
+          <div class="empty-state">
+            Tap "Examples" above to see sample date ideas, then add your own!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="draw-section">
+      <div class="filter-input">
+        <input type="text" id="filter" placeholder="Filter by tag (optional)" />
+      </div>
+      <button id="draw" class="btn draw-btn">Get Random Idea</button>
+      <div id="result" style="display:none"></div>
     </div>
   </div>
 <script>
 (function(){
   'use strict';
   
-  const LS_KEY = "datedeck_items_v2";
+  const LS_KEY = "datedeck_items_v3";
   let items = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
   
   // Cache DOM elements
@@ -289,12 +437,17 @@
   const file = el('file');
   const parseBtn = el('parse');
   const listEl = el('list');
-  const countEl = el('count');
   const drawBtn = el('draw');
   const resultEl = el('result');
   const filterEl = el('filter');
   const sampleBtn = el('sample');
   const statsEl = el('stats');
+  
+  // iOS-style haptic feedback simulation
+  function triggerHaptic(element) {
+    element.classList.add('haptic');
+    setTimeout(() => element.classList.remove('haptic'), 100);
+  }
   
   // Utility functions
   function save() { 
@@ -314,13 +467,12 @@
   
   function updateStats() {
     const count = items.length;
-    countEl.textContent = count;
     if (count === 0) {
-      statsEl.textContent = "Add some ideas to get started! 💡";
+      statsEl.textContent = "Add some ideas to get started";
     } else if (count === 1) {
-      statsEl.textContent = "1 amazing idea ready to go! 🎯";
+      statsEl.textContent = "1 idea in your collection";
     } else {
-      statsEl.textContent = `${count} amazing ideas ready! 🎲`;
+      statsEl.textContent = `${count} ideas in your collection`;
     }
   }
   
@@ -328,21 +480,43 @@
     updateStats();
     
     if (items.length === 0) {
-      listEl.innerHTML = '<div class="empty-state">Add some date ideas to get started! 💡</div>';
+      listEl.innerHTML = '<div class="empty-state">Tap "Examples" above to see sample date ideas, then add your own!</div>';
       return;
     }
     
     listEl.innerHTML = "";
+    listEl.className = "list";
+    
     items.forEach((item, i) => {
       const div = document.createElement('div');
-      div.className = "item";
-      div.innerHTML = `
-        <div class="item-text">${escapeHtml(item.text)}</div>
-        <div class="item-tags">${item.tags.map(tag => `#${escapeHtml(tag)}`).join(' ')}</div>
-      `;
+      div.className = "list-item";
       
-      // Add click to use as filter
+      const textDiv = document.createElement('div');
+      textDiv.className = "list-item-text";
+      textDiv.textContent = item.text;
+      
+      const tagsDiv = document.createElement('div');
+      tagsDiv.className = "list-item-tags";
+      tagsDiv.textContent = item.tags.map(tag => `#${tag}`).join(' ');
+      
+      div.appendChild(textDiv);
+      if (item.tags.length > 0) {
+        div.appendChild(tagsDiv);
+      }
+      
+      // Add native iOS touch behavior
+      div.addEventListener('touchstart', () => {
+        div.style.backgroundColor = 'var(--ios-gray6)';
+      });
+      
+      div.addEventListener('touchend', () => {
+        setTimeout(() => {
+          div.style.backgroundColor = '';
+        }, 150);
+      });
+      
       div.addEventListener('click', () => {
+        triggerHaptic(div);
         if (item.tags.length > 0) {
           filterEl.value = item.tags[0];
           filterEl.focus();
@@ -353,34 +527,29 @@
     });
   }
   
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-  
   function showResult(item) {
     resultEl.style.display = "block";
     resultEl.className = "result";
-    resultEl.innerHTML = `
-      <div class="result-text">${escapeHtml(item.text)}</div>
-      <div class="result-tags">${item.tags.map(tag => `#${escapeHtml(tag)}`).join(' ')}</div>
-    `;
     
-    // Scroll to result on mobile
-    setTimeout(() => {
-      resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+    const textDiv = document.createElement('div');
+    textDiv.className = "result-text";
+    textDiv.textContent = item.text;
+    
+    const tagsDiv = document.createElement('div');
+    tagsDiv.className = "result-tags";
+    tagsDiv.textContent = item.tags.map(tag => `#${tag}`).join(' ');
+    
+    resultEl.innerHTML = '';
+    resultEl.appendChild(textDiv);
+    if (item.tags.length > 0) {
+      resultEl.appendChild(tagsDiv);
+    }
   }
   
-  function addLoadingState(element) {
-    element.classList.add('loading');
-    element.disabled = true;
-  }
-  
-  function removeLoadingState(element) {
-    element.classList.remove('loading');
-    element.disabled = false;
+  function showError(message) {
+    resultEl.style.display = "block";
+    resultEl.className = "result";
+    resultEl.innerHTML = `<div class="result-text">${message}</div>`;
   }
   
   // Event handlers
@@ -388,7 +557,9 @@
     const text = bulk.value.trim();
     if (!text) return;
     
-    addLoadingState(parseBtn);
+    triggerHaptic(parseBtn);
+    parseBtn.classList.add('loading');
+    parseBtn.disabled = true;
     
     setTimeout(() => {
       const lines = text.split(/\n/).map(parseLine).filter(Boolean);
@@ -398,14 +569,17 @@
         render();
         bulk.value = "";
         
-        // Show success feedback
-        parseBtn.textContent = `✅ Added ${lines.length} idea${lines.length > 1 ? 's' : ''}!`;
+        // Provide feedback
+        const originalText = parseBtn.textContent;
+        parseBtn.textContent = `Added ${lines.length} idea${lines.length > 1 ? 's' : ''}`;
         setTimeout(() => {
-          parseBtn.textContent = "✨ Add to Deck";
-        }, 2000);
+          parseBtn.textContent = originalText;
+        }, 1500);
       }
-      removeLoadingState(parseBtn);
-    }, 300);
+      
+      parseBtn.classList.remove('loading');
+      parseBtn.disabled = false;
+    }, 200);
   });
   
   file.addEventListener('change', async (e) => {
@@ -415,20 +589,24 @@
     try {
       const text = await f.text();
       bulk.value = text;
-      bulk.focus();
+      // Auto-resize textarea
+      bulk.style.height = 'auto';
+      bulk.style.height = Math.max(100, bulk.scrollHeight) + 'px';
     } catch (error) {
-      alert('Error reading file. Please try again.');
+      showError('Could not read file');
     }
   });
   
   drawBtn.addEventListener('click', () => {
+    triggerHaptic(drawBtn);
+    
     if (items.length === 0) {
-      resultEl.style.display = "block";
-      resultEl.innerHTML = '<div class="result-text">Add some date ideas first! 💡</div>';
+      showError('Add some date ideas first');
       return;
     }
     
-    addLoadingState(drawBtn);
+    drawBtn.classList.add('loading');
+    drawBtn.disabled = true;
     
     setTimeout(() => {
       const filterText = filterEl.value.trim().toLowerCase();
@@ -442,52 +620,51 @@
       }
       
       if (pool.length === 0) {
-        resultEl.style.display = "block";
-        resultEl.innerHTML = '<div class="result-text">No matches found! 🤔</div><div class="result-tags">Try a different filter or add more ideas</div>';
+        showError('No matches found');
       } else {
         const pick = pool[Math.floor(Math.random() * pool.length)];
         showResult(pick);
       }
       
-      removeLoadingState(drawBtn);
-    }, 500);
+      drawBtn.classList.remove('loading');
+      drawBtn.disabled = false;
+    }, 300);
   });
   
   sampleBtn.addEventListener('click', () => {
+    triggerHaptic(sampleBtn);
+    
     const sampleIdeas = [
-      "Candlelit dinner at home | romantic, cozy, food",
-      "Stargazing in the park | romantic, outdoors, peaceful",
-      "Cooking class together | learning, food, interactive",
-      "Mini golf adventure | fun, active, playful", 
-      "Picnic at sunset | classic, outdoors, romantic",
-      "Board game marathon | cozy, home, competitive",
-      "Visit local art gallery | cultural, indoors, inspiring",
-      "Beach volleyball | active, outdoors, summer",
-      "Wine tasting evening | sophisticated, relaxing, social",
-      "Hiking trail adventure | active, outdoors, nature",
-      "Movie night with homemade popcorn | cozy, home, classic",
-      "Farmers market stroll | casual, outdoors, local",
-      "Dance lesson for beginners | active, learning, romantic",
-      "Bookstore browsing date | intellectual, indoor, quiet",
-      "Karaoke night | fun, social, entertaining"
+      "Coffee shop date | casual, indoors",
+      "Hiking trail | active, outdoors",
+      "Cooking together | home, food",
+      "Museum visit | cultural, indoors",
+      "Picnic in the park | outdoor, relaxed",
+      "Movie night | home, entertainment",
+      "Farmers market | casual, outdoor",
+      "Board game café | indoor, games",
+      "Beach walk | outdoor, romantic",
+      "Art gallery | cultural, indoor",
+      "Mini golf | fun, active",
+      "Wine tasting | sophisticated, indoor",
+      "Bookstore browsing | quiet, indoor",
+      "Dance class | active, learning",
+      "Food truck tour | casual, outdoor"
     ];
     
     bulk.value = sampleIdeas.join('\n');
-    bulk.focus();
-    
-    // Auto-scroll to textarea on mobile
-    setTimeout(() => {
-      bulk.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+    // Auto-resize textarea
+    bulk.style.height = 'auto';
+    bulk.style.height = Math.max(100, bulk.scrollHeight) + 'px';
   });
   
   // Auto-resize textarea
   bulk.addEventListener('input', () => {
     bulk.style.height = 'auto';
-    bulk.style.height = Math.max(120, bulk.scrollHeight) + 'px';
+    bulk.style.height = Math.max(100, bulk.scrollHeight) + 'px';
   });
   
-  // Enter key to add ideas
+  // Keyboard shortcuts
   bulk.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
@@ -495,7 +672,6 @@
     }
   });
   
-  // Enter key to draw
   filterEl.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -506,11 +682,13 @@
   // Initialize
   render();
   
-  // Service worker registration for PWA
+  // Service worker registration
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./service-worker.js')
-        .catch(err => console.log('SW registration failed'));
+        .catch(() => {
+          // Silently fail - not critical for functionality
+        });
     });
   }
 })();

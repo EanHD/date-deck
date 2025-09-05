@@ -1,13 +1,13 @@
 {
-  "name": "Date Deck - Amazing Date Ideas",
-  "short_name": "Date Deck",
-  "description": "Your personal collection of amazing date ideas. Never run out of inspiration!",
+  "name": "Date Ideas",
+  "short_name": "Date Ideas",
+  "description": "Your personal collection of date ideas",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#667eea",
-  "theme_color": "#ff6b6b",
-  "categories": ["lifestyle", "entertainment"],
+  "background_color": "#F2F2F7",
+  "theme_color": "#007AFF",
+  "categories": ["lifestyle"],
   "icons": [
     {
       "src": "icons/icon-192.png",
